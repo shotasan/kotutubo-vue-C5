@@ -1,7 +1,11 @@
+Vue.filter('number_format', function (val) {
+  return val.toLocaleString();
+});
+
 var app = new Vue({
   el: '#app',
   data: {
-    taxRate: 0.1,
+    taxRate: 0.2,
     movieType: '余興ムービー',
     basePrice: 30000,
     addPrice1: 5000,
@@ -15,13 +19,15 @@ var app = new Vue({
     totalPrice: 0,
     wedding_date: '',
     delivery_date: '',
+    opt1_use: false,
     opt1_price: 5000,
     opt2_use: false,
     opt2_price: 5000,
     opt3_use: false,
     opt3_price: 5000,
     opt4_num: 0,
-    opt4_price: 500
+    opt4_price: 500,
+    tommorow: null
   },
   methods: {
     incTax: function (untaxed) {
@@ -32,6 +38,7 @@ var app = new Vue({
       var date2 = new Date(dateString2);
 
       var msDiff = date1.getTime() - date2.getTime();
+
 
       return Math.ceil(msDiff / (1000 * 60 * 60 * 24));
     },
@@ -60,8 +67,9 @@ var app = new Vue({
     taxedBasePrice: function () {
       // 基本料金の計算
       var addPrice = 0;
-      var delivery_date = app.querySelector('#delivery_date');
-      var dateDiff = getDateDiff(delivery_date.value, (new Date()).toLocaleString());
+      console.log(this.delivery_date);
+
+      var dateDiff = this.getDateDiff(this.delivery_date, (new Date()).toLocaleString());
 
       if (21 <= dateDiff && dateDiff < 30) {
         addPrice = this.addPrice1;
@@ -84,7 +92,7 @@ var app = new Vue({
       else if (dateDiff == 1) {
         addPrice = this.addPrice7;
       }
-      return incTax(this.basePrice + addPrice);
+      return this.incTax(this.basePrice + addPrice);
     },
     taxedOptPrice: function () {
       // オプション料金の計算
@@ -107,5 +115,8 @@ var app = new Vue({
     this.wedding_date = this.formatDate(dt);
     dt.setDate(dt.getDate() - 7);
     this.delivery_date = this.formatDate(dt);
+    dt = new Date();
+    dt.setDate(dt.getDate() + 1);
+    this.tommorow = this.formatDate(dt);
   }
 });
